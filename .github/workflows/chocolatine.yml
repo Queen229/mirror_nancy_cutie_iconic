@@ -35,14 +35,18 @@ jobs:
       - name: Run coding style checker
         run: check.sh $(pwd) $(pwd)
 
-      - name: Annotate coding style errors
+        - name: Annotate coding style errors
         run: |
-          if [ -f coding-style-reports.log ]; then
-            while IFS= read -r line; do
+        if [ -f coding-style-reports.log ]; then
+        ERR=0
+        while IFS= read -r line; do
               FILE=$(echo "$line" | cut -d ':' -f1)
               LINE_NUM=$(echo "$line" | cut -d ':' -f2)
               MSG=$(echo "$line" | cut -d ':' -f3-)
               echo "::error file=$FILE,line=$LINE_NUM::$MSG"
-            done < coding-style-reports.log
-            exit 1
-          fi
+              ERR=1
+              done < coding-style-reports.log
+              if [ $ERR -eq 1 ]; then
+              exit 1
+              fi
+              fi
