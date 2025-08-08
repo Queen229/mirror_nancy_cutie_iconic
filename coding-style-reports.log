@@ -1,0 +1,7 @@
+./a.out:1: MAJOR:C-O1
+./momo.c:8: MAJOR:C-F6
+./momo.c:8: MINOR:C-L3
+./momo.c:10: MAJOR:C-L1
+./momo.c:10: MAJOR:C-L5
+./momo.c:11: MINOR:C-L6
+./momo.c~:1: MAJOR:C-O1

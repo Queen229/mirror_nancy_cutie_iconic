@@ -4,9 +4,12 @@
 ** File description:
 ** dcfdjn
 */
+
 #include <stdio.h>
-int main ()
+
+int main(void)
 {
-    int d, c;
+    int d;
+
     printf("MONNSIND");
 }
