@@ -23,30 +23,23 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
  check_coding_style:
-    needs: skip_conditions
-    if: needs.skip_conditions.outputs.should_skip == 'false'
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/epitech/coding-style-checker:latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  needs: skip_conditions
+  if: needs.skip_conditions.outputs.should_skip == 'false'
+  runs-on: ubuntu-latest
+  container:
+    image: ghcr.io/epitech/coding-style-checker:latest
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Run coding style checker
-        run: check.sh $(pwd) $(pwd)
+    - name: Run coding style checker
+      run: check.sh $(pwd) $(pwd)
 
-        - name: Annotate coding style errors
-        run: |
-        if [ -f coding-style-reports.log ]; then
-        ERR=0
-        while IFS= read -r line; do
-              FILE=$(echo "$line" | cut -d ':' -f1)
-              LINE_NUM=$(echo "$line" | cut -d ':' -f2)
-              MSG=$(echo "$line" | cut -d ':' -f3-)
-              echo "::error file=$FILE,line=$LINE_NUM::$MSG"
-              ERR=1
-              done < coding-style-reports.log
-              if [ $ERR -eq 1 ]; then
-              exit 1
-              fi
-              fi
+    - name: Fail if coding style errors found
+      run: |
+        if [ -s coding-style-reports.log ]; then
+          cat coding-style-reports.log | while IFS=: read -r file line msg; do
+            echo "::error file=$file,line=$line::$msg"
+          done
+          exit 1
+        fi
