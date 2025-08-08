@@ -1,5 +1,4 @@
-name: Chocolatine Workflow
-
+name: My Workflow
 on:
   push:
   pull_request:
@@ -9,7 +8,21 @@ env:
   EXECUTABLES: mysh
 
 jobs:
-  check_coding_style:
+ skip_conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.skip }}
+    steps:
+      - name: Check if branch starts with ga-ignore- or repo is mirror
+        id: skip_check
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/ga-ignore-"* ]] || \
+             [[ "git@github.com:${{ github.repository }}.git" == "${{ env.MIRROR_URL }}" ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+ check_coding_style:
     needs: skip_conditions
     if: needs.skip_conditions.outputs.should_skip == 'false'
     runs-on: ubuntu-latest
