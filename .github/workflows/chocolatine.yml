@@ -1,4 +1,5 @@
 name: My Workflow
+
 on:
   push:
   pull_request:
@@ -8,7 +9,7 @@ env:
   EXECUTABLES: mysh
 
 jobs:
- skip_conditions:
+  skip_conditions:
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.skip }}
@@ -22,24 +23,25 @@ jobs:
           else
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
- check_coding_style:
-  needs: skip_conditions
-  if: needs.skip_conditions.outputs.should_skip == 'false'
-  runs-on: ubuntu-latest
-  container:
-    image: ghcr.io/epitech/coding-style-checker:latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
 
-    - name: Run coding style checker
-      run: check.sh $(pwd) $(pwd)
+  check_coding_style:
+    needs: skip_conditions
+    if: needs.skip_conditions.outputs.should_skip == 'false'
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Fail if coding style errors found
-      run: |
-        if [ -s coding-style-reports.log ]; then
-          cat coding-style-reports.log | while IFS=: read -r file line msg; do
-            echo "::error file=$file,line=$line::$msg"
-          done
-          exit 1
-        fi
+      - name: Run coding style checker
+        run: check.sh $(pwd) $(pwd)
+
+      - name: Fail if coding style errors found
+        run: |
+          if [ -s coding-style-reports.log ]; then
+            cat coding-style-reports.log | while IFS=: read -r file line msg; do
+              echo "::error file=$file,line=$line::$msg"
+            done
+            exit 1
+          fi
